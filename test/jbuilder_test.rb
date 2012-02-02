@@ -9,7 +9,7 @@ class JbuilderTest < ActiveSupport::TestCase
       json.content "hello"
     end
 
-    assert_equal "hello", JSON.parse(json)["content"]
+    assert_equal "hello", MultiJson.decode(json)["content"]
   end
 
   test "multiple keys" do
@@ -18,7 +18,7 @@ class JbuilderTest < ActiveSupport::TestCase
       json.content "world"
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal "hello", parsed["title"]
       assert_equal "world", parsed["content"]
     end
@@ -31,7 +31,7 @@ class JbuilderTest < ActiveSupport::TestCase
       json.extract! person, :name, :age
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal "David", parsed["name"]
       assert_equal 32, parsed["age"]
     end
@@ -46,7 +46,7 @@ class JbuilderTest < ActiveSupport::TestCase
         json.(person, :name, :age)
       end
 
-      JSON.parse(json).tap do |parsed|
+      MultiJson.decode(json).tap do |parsed|
         assert_equal "David", parsed["name"]
         assert_equal 32, parsed["age"]
       end
@@ -62,7 +62,7 @@ class JbuilderTest < ActiveSupport::TestCase
       end
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal "David", parsed["author"]["name"]
       assert_equal 32, parsed["author"]["age"]
     end
@@ -76,7 +76,7 @@ class JbuilderTest < ActiveSupport::TestCase
       end
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal "hello", parsed["comments"].first["content"]
       assert_equal "world", parsed["comments"].second["content"]
     end
@@ -95,7 +95,7 @@ class JbuilderTest < ActiveSupport::TestCase
       json.author person, :name, :age
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal "David", parsed["author"]["name"]
       assert_equal 32,      parsed["author"]["age"]
     end
@@ -108,7 +108,7 @@ class JbuilderTest < ActiveSupport::TestCase
       json.comments comments, :content
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal ["content"], parsed["comments"].first.keys
       assert_equal "hello", parsed["comments"].first["content"]
       assert_equal "world", parsed["comments"].second["content"]
@@ -123,7 +123,7 @@ class JbuilderTest < ActiveSupport::TestCase
       json.comments comments, :content
     end
     
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal "Parent", parsed["name"]
       assert_equal [], parsed["comments"]
     end
@@ -138,7 +138,7 @@ class JbuilderTest < ActiveSupport::TestCase
       end
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal ["content"], parsed["comments"].first.keys
       assert_equal "hello", parsed["comments"].first["content"]
       assert_equal "world", parsed["comments"].second["content"]
@@ -156,7 +156,7 @@ class JbuilderTest < ActiveSupport::TestCase
         end
       end
 
-      JSON.parse(json).tap do |parsed|
+      MultiJson.decode(json).tap do |parsed|
         assert_equal "hello", parsed.first["content"]
         assert_equal "world", parsed.second["content"]
       end
@@ -177,7 +177,7 @@ class JbuilderTest < ActiveSupport::TestCase
       end
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal "hello", parsed["author"]["comments"].first["content"]
       assert_equal "world", parsed["author"]["comments"].second["content"]
     end
@@ -196,7 +196,7 @@ class JbuilderTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal "david", JSON.parse(json)["comments"].first["authors"].first["name"]
+    assert_equal "david", MultiJson.decode(json)["comments"].first["authors"].first["name"]
   end
 
   test "top-level array" do
@@ -208,7 +208,7 @@ class JbuilderTest < ActiveSupport::TestCase
       end
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert_equal "hello", parsed.first["content"]
       assert_equal "world", parsed.second["content"]
     end
@@ -223,7 +223,7 @@ class JbuilderTest < ActiveSupport::TestCase
       end
     end
     
-    assert_equal [], JSON.parse(json)
+    assert_equal [], MultiJson.decode(json)
   end
   
   test "dynamically set a key/value" do
@@ -231,7 +231,7 @@ class JbuilderTest < ActiveSupport::TestCase
       json.set!(:each, "stuff")
     end
 
-    assert_equal "stuff", JSON.parse(json)["each"]
+    assert_equal "stuff", MultiJson.decode(json)["each"]
   end
 
   test "false/nil values can be set" do
@@ -240,7 +240,7 @@ class JbuilderTest < ActiveSupport::TestCase
       json.nil_value nil
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert parsed.key?("false_value"), "The false value key is not present"
       assert_equal false, parsed["false_value"]
 
@@ -256,7 +256,7 @@ class JbuilderTest < ActiveSupport::TestCase
       end
     end
 
-    JSON.parse(json).tap do |parsed|
+    MultiJson.decode(json).tap do |parsed|
       assert parsed.key?("comments"), "The comments key is not present"
       assert parsed["comments"].is_a?(Array), "The comments key is not an array"
       assert parsed["comments"].empty?, "The comments array is not empty"
